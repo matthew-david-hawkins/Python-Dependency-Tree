@@ -22,8 +22,7 @@ setTimeout(function() {
     testing = "http://127.0.0.1:5000/api/python/" + inputValue
     deployed = "https://python-dependency-api.herokuapp.com/api/python/" + inputValue
     
-    url = deployed
-    console.log(deployed)
+    url = testing
 
     d3.json(url).then(function(data){
       d3.select("#tree").selectAll("*").remove() // remove everything that's already there

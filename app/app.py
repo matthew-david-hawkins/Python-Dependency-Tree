@@ -59,10 +59,14 @@ def children_list(module_name) -> Dict:
             for module in required_modules:
                 #print(module['extras'].strip(' '))
                 try:
-                    val = module['extras'] # only get modules with nothing in the Extras
+                    if module['extras'].replace(' ', "").find("extra==") == -1:
+                        children.append(module["name"]) # only get modules without the designator 'extra ==' in the Extras
                 except:
-                    children.append(module["name"])
-            return list(set(children)) # remove duplicates
+                    children.append(module["name"]) # if extras don't exist append it
+            
+            children = sorted(list(set(children)), key=str.casefold) # remove duplicates and sort alphabetically
+
+            return children 
     
     except:
         
