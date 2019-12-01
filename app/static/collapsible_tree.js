@@ -20,7 +20,7 @@ setTimeout(function() {
     //testing = "/s/pytest_dp.json"
     //deployment = "https://s3.us-east-2.amazonaws.com/thrum.engineering.com/pandas_dependencies.json"
 
-    url = "http://127.0.0.1:5000/api/python/" + inputValue
+    url = "https://python-dependency-api.herokuapp.com/api/python/" + inputValue
   
     console.log(url)
     d3.json(url).then(function(data){
