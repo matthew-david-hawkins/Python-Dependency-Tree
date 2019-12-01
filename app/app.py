@@ -116,8 +116,9 @@ def home():
 @app.route("/api/python/<module>")
 def historical(module: str):
     """Takes a python module name and returns full dependency tree"""
-
-    return jsonify(dependency_tree(module, module, {}, [], 0))
+    response = jsonify(dependency_tree(module, module, {}, [], 0))
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 if __name__ == '__main__':
     

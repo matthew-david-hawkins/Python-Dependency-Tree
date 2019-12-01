@@ -19,9 +19,11 @@ setTimeout(function() {
     
     //testing = "/s/pytest_dp.json"
     //deployment = "https://s3.us-east-2.amazonaws.com/thrum.engineering.com/pandas_dependencies.json"
-    url = "http://127.0.0.1:5000/api/python/" + inputValue
-
-    console.log(url)
+    testing = "http://127.0.0.1:5000/api/python/" + inputValue
+    deployed = "https://python-dependency-api.herokuapp.com/api/python/" + inputValue
+    
+    url = deployed
+    console.log(deployed)
 
     d3.json(url).then(function(data){
       d3.select("#tree").selectAll("*").remove() // remove everything that's already there
