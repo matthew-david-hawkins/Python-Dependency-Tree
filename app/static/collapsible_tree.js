@@ -1,7 +1,7 @@
-margin = ({top: 10, right: 120, bottom: 10, left: 150}); // set margins
+margin = ({top: 10, right: 75, bottom: 10, left: 75}); // set margins
 var width = 1200 - margin.left - margin.right; // set chart width
-dx = 30; // 
-dy = width / 6;
+dx = 15; // controls vertical spacing
+dy = width / 6; // controls horizontal spacing
 // d3 = require("d3@5");
 
 // Select the button
@@ -19,12 +19,12 @@ setTimeout(function() {
     
     //testing = "/s/pytest_dp.json"
     //deployment = "https://s3.us-east-2.amazonaws.com/thrum.engineering.com/pandas_dependencies.json"
-    testing = "http://127.0.0.1:5000/api/python/" + inputValue
-    deployed = "https://python-dependency-api.herokuapp.com/api/python/" + inputValue
-    
-    url = testing
 
+    url = "http://127.0.0.1:5000/api/python/" + inputValue
+  
+    console.log(url)
     d3.json(url).then(function(data){
+      console.log(data)
       d3.select("#tree").selectAll("*").remove() // remove everything that's already there
       // console.log(data);
       var mysvg = chart(data)
@@ -32,9 +32,6 @@ setTimeout(function() {
       d3.select("#tree").node().append(mysvg)
     }); // Load data in json form
   
-    // Set the span tag in the h1 element to the text
-    // that was entered in the form
-    d3.select("h1>span").text(inputValue);
   });
 }, 1000)
 
@@ -53,7 +50,7 @@ function chart(data){
   });
 
   const svg = d3.create("svg")
-      .attr("viewBox", [-margin.left, -margin.top, width, dx])
+      .attr("viewBox", [-margin.left, -margin.top, width, dx]) 
       .style("font", "10px sans-serif")
       .style("user-select", "none");
 
@@ -105,7 +102,7 @@ function chart(data){
 
     nodeEnter.append("circle")
         .attr("r", 2.5)
-        .attr("fill", d => d._children ? "#555" : "#999")
+        .attr("fill", d => d._children ? "#0000EE" : "#999") // if it has dependents show in hyperlink blue, otherwise gray
         .attr("stroke-width", 10);
 
     nodeEnter.append("text")
@@ -164,6 +161,258 @@ function chart(data){
   return svg.node();
 } 
 
+// initaialize with data from the 'tensorflow' module
+example = {
+  "children": [
+    {
+      "name": "absl-py"
+    }, 
+    {
+      "name": "astor"
+    }, 
+    {
+      "name": "backports.weakref"
+    }, 
+    {
+      "name": "enum34"
+    }, 
+    {
+      "name": "functools32"
+    }, 
+    {
+      "name": "gast"
+    }, 
+    {
+      "children": [
+        {
+          "name": "six"
+        }
+      ], 
+      "name": "google-pasta"
+    }, 
+    {
+      "children": [
+        {
+          "name": "enum34"
+        }, 
+        {
+          "name": "futures"
+        }, 
+        {
+          "name": "six"
+        }
+      ], 
+      "name": "grpcio"
+    }, 
+    {
+      "children": [
+        {
+          "name": "h5py"
+        }, 
+        {
+          "name": "numpy"
+        }
+      ], 
+      "name": "keras-applications"
+    }, 
+    {
+      "children": [
+        {
+          "name": "numpy"
+        }, 
+        {
+          "name": "six"
+        }
+      ], 
+      "name": "keras-preprocessing"
+    }, 
+    {
+      "children": [
+        {
+          "name": "funcsigs"
+        }, 
+        {
+          "name": "six"
+        }
+      ], 
+      "name": "mock"
+    }, 
+    {
+      "name": "numpy"
+    }, 
+    {
+      "name": "opt-einsum"
+    }, 
+    {
+      "children": [
+        {
+          "name": "setuptools"
+        }, 
+        {
+          "name": "six"
+        }
+      ], 
+      "name": "protobuf"
+    }, 
+    {
+      "name": "six"
+    }, 
+    {
+      "children": [
+        {
+          "name": "absl-py"
+        }, 
+        {
+          "name": "futures"
+        }, 
+        {
+          "children": [
+            {
+              "name": "cachetools"
+            }, 
+            {
+              "children": [
+                {
+                  "name": "pyasn1"
+                }
+              ], 
+              "name": "pyasn1-modules"
+            }, 
+            {
+              "name": "rsa"
+            }, 
+            {
+              "name": "setuptools"
+            }, 
+            {
+              "name": "six"
+            }
+          ], 
+          "name": "google-auth"
+        }, 
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "name": "cachetools"
+                }, 
+                {
+                  "children": [
+                    {
+                      "name": "pyasn1"
+                    }
+                  ], 
+                  "name": "pyasn1-modules"
+                }, 
+                {
+                  "name": "rsa"
+                }, 
+                {
+                  "name": "setuptools"
+                }, 
+                {
+                  "name": "six"
+                }
+              ], 
+              "name": "google-auth"
+            }, 
+            {
+              "name": "requests-oauthlib"
+            }
+          ], 
+          "name": "google-auth-oauthlib"
+        }, 
+        {
+          "children": [
+            {
+              "name": "enum34"
+            }, 
+            {
+              "name": "futures"
+            }, 
+            {
+              "name": "six"
+            }
+          ], 
+          "name": "grpcio"
+        }, 
+        {
+          "children": [
+            {
+              "name": "setuptools"
+            }
+          ], 
+          "name": "markdown"
+        }, 
+        {
+          "name": "numpy"
+        }, 
+        {
+          "children": [
+            {
+              "name": "setuptools"
+            }, 
+            {
+              "name": "six"
+            }
+          ], 
+          "name": "protobuf"
+        }, 
+        {
+          "children": [
+            {
+              "name": "certifi"
+            }, 
+            {
+              "name": "chardet"
+            }, 
+            {
+              "name": "idna"
+            }, 
+            {
+              "name": "urllib3"
+            }
+          ], 
+          "name": "requests"
+        }, 
+        {
+          "name": "setuptools"
+        }, 
+        {
+          "name": "six"
+        }, 
+        {
+          "name": "werkzeug"
+        }, 
+        {
+          "name": "wheel"
+        }
+      ], 
+      "name": "tensorboard"
+    }, 
+    {
+      "name": "tensorflow-estimator"
+    }, 
+    {
+      "name": "termcolor"
+    }, 
+    {
+      "name": "wheel"
+    }, 
+    {
+      "name": "wrapt"
+    }
+  ], 
+  "name": "tensorflow"
+};
+
+
+d3.select("#tree").selectAll("*").remove() // remove everything that's already there
+// console.log(data);
+var mysvg = chart(example)
+// console.log(mysvg)
+d3.select("#tree").node().append(mysvg)
 
 
 

@@ -1,0 +1,244 @@
+{
+    "children": [
+      {
+        "name": "absl-py"
+      }, 
+      {
+        "name": "astor"
+      }, 
+      {
+        "name": "backports.weakref"
+      }, 
+      {
+        "name": "enum34"
+      }, 
+      {
+        "name": "functools32"
+      }, 
+      {
+        "name": "gast"
+      }, 
+      {
+        "children": [
+          {
+            "name": "six"
+          }
+        ], 
+        "name": "google-pasta"
+      }, 
+      {
+        "children": [
+          {
+            "name": "enum34"
+          }, 
+          {
+            "name": "futures"
+          }, 
+          {
+            "name": "six"
+          }
+        ], 
+        "name": "grpcio"
+      }, 
+      {
+        "children": [
+          {
+            "name": "h5py"
+          }, 
+          {
+            "name": "numpy"
+          }
+        ], 
+        "name": "keras-applications"
+      }, 
+      {
+        "children": [
+          {
+            "name": "numpy"
+          }, 
+          {
+            "name": "six"
+          }
+        ], 
+        "name": "keras-preprocessing"
+      }, 
+      {
+        "children": [
+          {
+            "name": "funcsigs"
+          }, 
+          {
+            "name": "six"
+          }
+        ], 
+        "name": "mock"
+      }, 
+      {
+        "name": "numpy"
+      }, 
+      {
+        "name": "opt-einsum"
+      }, 
+      {
+        "children": [
+          {
+            "name": "setuptools"
+          }, 
+          {
+            "name": "six"
+          }
+        ], 
+        "name": "protobuf"
+      }, 
+      {
+        "name": "six"
+      }, 
+      {
+        "children": [
+          {
+            "name": "absl-py"
+          }, 
+          {
+            "name": "futures"
+          }, 
+          {
+            "children": [
+              {
+                "name": "cachetools"
+              }, 
+              {
+                "children": [
+                  {
+                    "name": "pyasn1"
+                  }
+                ], 
+                "name": "pyasn1-modules"
+              }, 
+              {
+                "name": "rsa"
+              }, 
+              {
+                "name": "setuptools"
+              }, 
+              {
+                "name": "six"
+              }
+            ], 
+            "name": "google-auth"
+          }, 
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "name": "cachetools"
+                  }, 
+                  {
+                    "children": [
+                      {
+                        "name": "pyasn1"
+                      }
+                    ], 
+                    "name": "pyasn1-modules"
+                  }, 
+                  {
+                    "name": "rsa"
+                  }, 
+                  {
+                    "name": "setuptools"
+                  }, 
+                  {
+                    "name": "six"
+                  }
+                ], 
+                "name": "google-auth"
+              }, 
+              {
+                "name": "requests-oauthlib"
+              }
+            ], 
+            "name": "google-auth-oauthlib"
+          }, 
+          {
+            "children": [
+              {
+                "name": "enum34"
+              }, 
+              {
+                "name": "futures"
+              }, 
+              {
+                "name": "six"
+              }
+            ], 
+            "name": "grpcio"
+          }, 
+          {
+            "children": [
+              {
+                "name": "setuptools"
+              }
+            ], 
+            "name": "markdown"
+          }, 
+          {
+            "name": "numpy"
+          }, 
+          {
+            "children": [
+              {
+                "name": "setuptools"
+              }, 
+              {
+                "name": "six"
+              }
+            ], 
+            "name": "protobuf"
+          }, 
+          {
+            "children": [
+              {
+                "name": "certifi"
+              }, 
+              {
+                "name": "chardet"
+              }, 
+              {
+                "name": "idna"
+              }, 
+              {
+                "name": "urllib3"
+              }
+            ], 
+            "name": "requests"
+          }, 
+          {
+            "name": "setuptools"
+          }, 
+          {
+            "name": "six"
+          }, 
+          {
+            "name": "werkzeug"
+          }, 
+          {
+            "name": "wheel"
+          }
+        ], 
+        "name": "tensorboard"
+      }, 
+      {
+        "name": "tensorflow-estimator"
+      }, 
+      {
+        "name": "termcolor"
+      }, 
+      {
+        "name": "wheel"
+      }, 
+      {
+        "name": "wrapt"
+      }
+    ], 
+    "name": "tensorflow"
+  }
