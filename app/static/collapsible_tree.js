@@ -4,11 +4,41 @@ dx = 15; // controls vertical spacing
 dy = width / 6; // controls horizontal spacing
 // d3 = require("d3@5");
 
+// Function for showing loading status
+function loadingFunction() {
+  console.log("loading")
+  var x = document.getElementById("loadingButton");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  }
+
+  var y = document.getElementById("searchButton");
+  if (y.style.display !== "none") {
+    y.style.display = "none";
+  }
+}
+
+// Function for hiding the loading status
+function completionFunction() {
+  console.log("loading")
+  var x = document.getElementById("searchButton");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  }
+
+  var y = document.getElementById("loadingButton");
+  if (y.style.display !== "none") {
+    y.style.display = "none";
+  }
+}
+
 // Select the button
 setTimeout(function() { 
-  var button = d3.select("#button");
+  var button = d3.select("#searchButton");
   // console.log(button)
   button.on("click", function() {
+
+    loadingFunction(); // Show loading spinner
 
     // console.log("button click")
     // Select the input element and get the raw HTML node
@@ -30,6 +60,8 @@ setTimeout(function() {
       var mysvg = chart(data)
       // console.log(mysvg)
       d3.select("#tree").node().append(mysvg)
+
+      completionFunction(); // End loading spinner
     }); // Load data in json form
   
   });
