@@ -13,9 +13,12 @@ function main(inputValue){
   console.log(url)
   d3.json(url).then(function(data){
 
+    console.log(data)
+    treeData = data["dependency_tree"]
+
     d3.select("#tree").selectAll("*").remove() // remove everything that's already there
 
-    var mysvg = chart(data)
+    var mysvg = chart(treeData)
 
     d3.select("#tree").node().append(mysvg)
 

@@ -120,16 +120,33 @@ def home():
 @app.route("/api/python/<module>")
 def historical(module: str):
     """Takes a python module name and returns full dependency tree"""
-    record = get_module(module)
+    name = module.lower()
+    record = get_module(name)
     try:
 
-        response = jsonify(record["dependency_tree"])
+        tree = record["dependency_tree"]
+        response = jsonify(record)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        print("quick")
+        print(response)
 
     except:
-        response = jsonify(dependency_tree(module, module, {}, [], 0))
+        print("slow")
+        try:
+            tree = dependency_tree(name, name, {}, [], 0)
+            print(tree)
+            print(record)
+            collection.find_one_and_update({"name": name}, 
+                        {"$set": 
+                            {"dependency_tree": tree}
+                                })
+            new_record = get_module(name)
+            response = jsonify(new_record)
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            print(response)
+        except:
+            response = {}
 
-
-    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 if __name__ == '__main__':
