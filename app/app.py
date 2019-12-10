@@ -74,7 +74,7 @@ def children_list(module_name) -> Dict:
 
 def dependency_tree(module: str, root: str, tree: Dict = {}, parent_list: List = [], recursion_depth: int = 0) -> Dict:
     """Takes a module name and does a recursive search for each module and returns a tree object"""
-    # I would write the name of module
+     # I would write the name of module
     tree.update({"name": module})
 
     parent_list.append(module)
@@ -120,7 +120,15 @@ def home():
 @app.route("/api/python/<module>")
 def historical(module: str):
     """Takes a python module name and returns full dependency tree"""
-    response = jsonify(dependency_tree(module, module, {}, [], 0))
+    record = get_module(module)
+    try:
+
+        response = jsonify(record["dependency_tree"])
+
+    except:
+        response = jsonify(dependency_tree(module, module, {}, [], 0))
+
+
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 

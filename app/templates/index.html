@@ -20,6 +20,41 @@
     height: 100%;
   }
 
+  .tooltip {
+  position: absolute;
+  width: 100px;
+  height: 50px;
+  margin-top: 30px;
+  margin-left: 64px;
+  padding: 4px;
+  font: 12px sans-serif;
+  text-align: center;
+  color: white;
+  background: blue;
+  border: 0;
+  border-radius: 10px;
+  z-index:9999;
+}
+
+.tooltippointer {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  margin-left: 12px;
+  margin-top: 8px;
+  width: 0;
+  border-top: 5px solid blue;
+  border-top: 5px solid blue;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+  font-size: 0;
+  line-height: 0;
+  -webkit-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+  z-index:9999;
+}
+
 </style>
 
 </head>
@@ -35,10 +70,10 @@
     <div class="row">
       <div class="col-xs-12  col-md-2">
         <div class="article">
-          <form>
+          <form id="theForm">
             <div class="form-group">
               <!-- <label for="example-form">Enter a Python Module Name To See Dependencies Tree:</label> -->
-              <input class="form-control" id="example-form-input" name="example-form" type="text", placeholder="tensorflow">
+              <input class="form-control" id="theInput" name="example-form" type="text", placeholder="tensorflow">
             </div>
             <button class="btn btn-primary" type="button" id="loadingButton"  style="display:none" disabled >
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

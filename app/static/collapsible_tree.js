@@ -1,8 +1,63 @@
-margin = ({top: 10, right: 75, bottom: 10, left: 75}); // set margins
-var width = 1200 - margin.left - margin.right; // set chart width
-dx = 15; // controls vertical spacing
-dy = width / 6; // controls horizontal spacing
-// d3 = require("d3@5");
+// ------------------------------
+// Application functions
+//-------------------------------
+
+// Make API call, draw diagram
+function main(inputValue){
+
+  loadingFunction(); // Show loading spinner
+
+  //url = "https://python-dependency-api.herokuapp.com/api/python/" + inputValue
+  url = "http://127.0.0.1:5000/api/python/" + inputValue
+
+  console.log(url)
+  d3.json(url).then(function(data){
+
+    d3.select("#tree").selectAll("*").remove() // remove everything that's already there
+
+    var mysvg = chart(data)
+
+    d3.select("#tree").node().append(mysvg)
+
+    completionFunction(); // End loading spinner
+  }); // Load data in json form
+
+}
+
+// Select main on search click
+setTimeout(function() { 
+
+  var button = d3.select("#searchButton");
+
+  button.on("click", function() {
+
+  // Select the input element and get the raw HTML node
+  var inputElement = d3.select("#theInput");
+
+  // Get the value property of the input element
+  var inputValue = inputElement.property("value");
+  
+  main(inputValue);
+
+  });
+  
+}, 1000)
+
+// call main on form submission
+d3.select("#theForm").on("submit", function() {
+
+  d3.event.preventDefault();
+
+  var inp = d3.select("#theInput");
+
+  var v = inp.property("value");
+
+  inp.property("value", "");
+
+  main(v)
+
+  return false;
+});
 
 // Function for showing loading status
 function loadingFunction() {
@@ -32,49 +87,63 @@ function completionFunction() {
   }
 }
 
-// Select the button
-setTimeout(function() { 
-  var button = d3.select("#searchButton");
-  // console.log(button)
-  button.on("click", function() {
+//---------------------------
+// Collapsible Tree
+//---------------------------
+margin = ({top: 10, right: 75, bottom: 10, left: 75}); // set margins
 
-    loadingFunction(); // Show loading spinner
+var width = 1200 - margin.left - margin.right; // set chart width
 
-    // console.log("button click")
-    // Select the input element and get the raw HTML node
-    var inputElement = d3.select("#example-form-input");
+// d3 = require("d3@5");
+
+diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x); // horizontal links
+
+dx = 15; // controls vertical spacing
+
+dy = width / 6; // controls horizontal spacing
+
+tree = d3.tree().nodeSize([dx, dy]); // Create a tree layout with node sizes specified as above
+
   
-    // Get the value property of the input element
-    var inputValue = inputElement.property("value");
-    
-    //testing = "/s/pytest_dp.json"
-    //deployment = "https://s3.us-east-2.amazonaws.com/thrum.engineering.com/pandas_dependencies.json"
+// // define tooltip parameters
+//   var toolTip = d3.tip()
+//   .attr("class", "tooltip")
+//   .html(function(d) {
+//       return (`testing<br>testing2: testing3<br>testing4: testing5`);
+//   });
 
-    url = "https://python-dependency-api.herokuapp.com/api/python/" + inputValue
-  
-    console.log(url)
-    d3.json(url).then(function(data){
-      console.log(data)
-      d3.select("#tree").selectAll("*").remove() // remove everything that's already there
-      // console.log(data);
-      var mysvg = chart(data)
-      // console.log(mysvg)
-      d3.select("#tree").node().append(mysvg)
+//   // define tooltip parameters
+//   var toolTippointer = d3.tip()
+//   .attr("class", "tooltippointer")
+//   .html("")
 
-      completionFunction(); // End loading spinner
-    }); // Load data in json form
-  
-  });
-}, 1000)
+// Tooltip function
+function mouseover(d) {
+  if (d._children){
+  d3.select(this).append("text")
+      .attr("class", "hover")
+      .attr('transform', function(d){ 
+          return 'translate(5, 2)';
+      })
+      .text("Click to expand");
+  }
+}
+
+// Toggle children on click.
+function mouseout(d) {
+  d3.select(this).select("text.hover").remove();
+}
 
 
-diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
-tree = d3.tree().nodeSize([dx, dy]);
-
+// Draw collapisble tree with json data
 function chart(data){
-  const root = d3.hierarchy(data);
+
+  const root = d3.hierarchy(data); // Create hierarchy objecy
+
   root.x0 = dy / 2;
+
   root.y0 = 0;
+
   root.descendants().forEach((d, i) => {
     d.id = i;
     d._children = d.children;
@@ -131,6 +200,20 @@ function chart(data){
           d.children = d.children ? null : d._children;
           update(d);
         });
+        // .on("mouseover", mouseover);
+        //.on("mouseout", mouseout);
+
+    // Append a "click here for first exapandable node"
+//     nodeEnter.append("text")
+//   if (d._children){
+//   d3.select(this).append("text")
+//       .attr("class", "hover")
+//       .attr('transform', function(d){ 
+//           return 'translate(5, 2)';
+//       })
+//       .text("Click to expand");
+//   }
+// }
 
     nodeEnter.append("circle")
         .attr("r", 2.5)
@@ -145,7 +228,9 @@ function chart(data){
       .clone(true).lower()
         .attr("stroke-linejoin", "round")
         .attr("stroke-width", 3)
-        .attr("stroke", "white");
+        .attr("stroke", "white")
+
+
 
     // Transition nodes to their new position.
     const nodeUpdate = node.merge(nodeEnter).transition(transition)
@@ -186,6 +271,22 @@ function chart(data){
       d.x0 = d.x;
       d.y0 = d.y;
     });
+    
+    // // bind tooltips
+    // nodeEnter.call(toolTip);
+    // nodeEnter.call(toolTippointer);
+
+    // // show tooltip on mouseover the text within the marker
+    // nodeEnter.on("mouseover", function(data) {
+    //   toolTip.show(data, this);
+    //   toolTippointer.show();
+    //   })
+  
+    // // hide tooltip on mouseout of the circle
+    // nodeEnter.on("mouseout", function(data) {
+    //     toolTip.hide(data, this);
+    //     toolTippointer.hide();
+    // })
   }
 
   update(root);
