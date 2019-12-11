@@ -10,21 +10,39 @@ function main(inputValue){
   //url = "https://python-dependency-api.herokuapp.com/api/python/" + inputValue
   url = "http://127.0.0.1:5000/api/python/" + inputValue
 
-  console.log(url)
   d3.json(url).then(function(data){
 
-    console.log(data)
-    treeData = data["dependency_tree"]
+    make_tree(data);
 
-    d3.select("#tree").selectAll("*").remove() // remove everything that's already there
-
-    var mysvg = chart(treeData)
-
-    d3.select("#tree").node().append(mysvg)
-
-    completionFunction(); // End loading spinner
   }); // Load data in json form
 
+}
+
+function make_tree(data){
+  console.log(data)
+  treeData = data["dependency_tree"]
+  summary = data.info.summary
+  console.log(summary)
+  d3.select("#module-description").selectAll("*").remove() // remove everything that's already there
+
+  d3.select("#module-extras").selectAll("*").remove() // remove everything that's already there
+
+  d3.select("#tree").selectAll("*").remove() // remove everything that's already there
+
+  var mysvg = chart(treeData)
+
+  d3.select("#tree").node().append(mysvg);
+
+  d3.select("#module-description").insert("h4")
+  .html(`<br>Summary: ${summary}`)//.style("color", "#1f77b4") // Plotly "muted blue"
+
+  d3.select("#module-extras").insert("p")
+  .html(`<br><br>Home: <a href="${data.home_page}" target="_blank"><strong>${data.home_page}</strong></a>
+  <br><br>Latest Version: <strong>${data.latest_release}</strong>
+  <br><br>Requires Python Version: <strong>${data.requires_python}</strong>
+  `)// .style("color", "#1f77b4") // Plotly "muted blue"
+
+  completionFunction(); // End loading spinner
 }
 
 // Select main on search click
@@ -93,9 +111,11 @@ function completionFunction() {
 //---------------------------
 // Collapsible Tree
 //---------------------------
-margin = ({top: 10, right: 75, bottom: 10, left: 75}); // set margins
+var w = window.innerWidth;
+var h = window.innerHeight;
+margin = ({top: 10, right: 450, bottom: 10, left: 200}); // set margins
 
-var width = 1200 - margin.left - margin.right; // set chart width
+var width = w - margin.left - margin.right; // set chart width
 
 // d3 = require("d3@5");
 
@@ -103,7 +123,7 @@ diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x); // horizontal links
 
 dx = 15; // controls vertical spacing
 
-dy = width / 6; // controls horizontal spacing
+dy = width / 6.5; // controls horizontal spacing
 
 tree = d3.tree().nodeSize([dx, dy]); // Create a tree layout with node sizes specified as above
 
@@ -148,6 +168,7 @@ function chart(data){
   root.y0 = 0;
 
   root.descendants().forEach((d, i) => {
+    console.log("depth:" + d.depth)
     d.id = i;
     d._children = d.children;
     if (d.depth && d.data.name.length !== 7) d.children = null;
@@ -299,124 +320,89 @@ function chart(data){
 
 // initaialize with data from the 'tensorflow' module
 example = {
-  "children": [
-    {
-      "name": "absl-py"
-    }, 
-    {
-      "name": "astor"
-    }, 
-    {
-      "name": "backports.weakref"
-    }, 
-    {
-      "name": "enum34"
-    }, 
-    {
-      "name": "functools32"
-    }, 
-    {
-      "name": "gast"
-    }, 
-    {
-      "children": [
-        {
-          "name": "six"
-        }
-      ], 
-      "name": "google-pasta"
-    }, 
-    {
-      "children": [
-        {
-          "name": "enum34"
-        }, 
-        {
-          "name": "futures"
-        }, 
-        {
-          "name": "six"
-        }
-      ], 
-      "name": "grpcio"
-    }, 
-    {
-      "children": [
-        {
-          "name": "h5py"
-        }, 
-        {
-          "name": "numpy"
-        }
-      ], 
-      "name": "keras-applications"
-    }, 
-    {
-      "children": [
-        {
-          "name": "numpy"
-        }, 
-        {
-          "name": "six"
-        }
-      ], 
-      "name": "keras-preprocessing"
-    }, 
-    {
-      "children": [
-        {
-          "name": "funcsigs"
-        }, 
-        {
-          "name": "six"
-        }
-      ], 
-      "name": "mock"
-    }, 
-    {
-      "name": "numpy"
-    }, 
-    {
-      "name": "opt-einsum"
-    }, 
-    {
-      "children": [
-        {
-          "name": "setuptools"
-        }, 
-        {
-          "name": "six"
-        }
-      ], 
-      "name": "protobuf"
-    }, 
-    {
-      "name": "six"
-    }, 
-    {
+    "dependency_tree": {
       "children": [
         {
           "name": "absl-py"
         }, 
         {
-          "name": "futures"
+          "name": "astor"
+        }, 
+        {
+          "name": "backports.weakref"
+        }, 
+        {
+          "name": "enum34"
+        }, 
+        {
+          "name": "functools32"
+        }, 
+        {
+          "name": "gast"
         }, 
         {
           "children": [
             {
-              "name": "cachetools"
+              "name": "six"
+            }
+          ], 
+          "name": "google-pasta"
+        }, 
+        {
+          "children": [
+            {
+              "name": "enum34"
             }, 
             {
-              "children": [
-                {
-                  "name": "pyasn1"
-                }
-              ], 
-              "name": "pyasn1-modules"
+              "name": "futures"
             }, 
             {
-              "name": "rsa"
+              "name": "six"
+            }
+          ], 
+          "name": "grpcio"
+        }, 
+        {
+          "children": [
+            {
+              "name": "h5py"
             }, 
+            {
+              "name": "numpy"
+            }
+          ], 
+          "name": "keras-applications"
+        }, 
+        {
+          "children": [
+            {
+              "name": "numpy"
+            }, 
+            {
+              "name": "six"
+            }
+          ], 
+          "name": "keras-preprocessing"
+        }, 
+        {
+          "children": [
+            {
+              "name": "funcsigs"
+            }, 
+            {
+              "name": "six"
+            }
+          ], 
+          "name": "mock"
+        }, 
+        {
+          "name": "numpy"
+        }, 
+        {
+          "name": "opt-einsum"
+        }, 
+        {
+          "children": [
             {
               "name": "setuptools"
             }, 
@@ -424,10 +410,19 @@ example = {
               "name": "six"
             }
           ], 
-          "name": "google-auth"
+          "name": "protobuf"
+        }, 
+        {
+          "name": "six"
         }, 
         {
           "children": [
+            {
+              "name": "absl-py"
+            }, 
+            {
+              "name": "futures"
+            }, 
             {
               "children": [
                 {
@@ -454,101 +449,273 @@ example = {
               "name": "google-auth"
             }, 
             {
-              "name": "requests-oauthlib"
-            }
-          ], 
-          "name": "google-auth-oauthlib"
-        }, 
-        {
-          "children": [
-            {
-              "name": "enum34"
+              "children": [
+                {
+                  "children": [
+                    {
+                      "name": "cachetools"
+                    }, 
+                    {
+                      "children": [
+                        {
+                          "name": "pyasn1"
+                        }
+                      ], 
+                      "name": "pyasn1-modules"
+                    }, 
+                    {
+                      "name": "rsa"
+                    }, 
+                    {
+                      "name": "setuptools"
+                    }, 
+                    {
+                      "name": "six"
+                    }
+                  ], 
+                  "name": "google-auth"
+                }, 
+                {
+                  "name": "requests-oauthlib"
+                }
+              ], 
+              "name": "google-auth-oauthlib"
             }, 
             {
-              "name": "futures"
+              "children": [
+                {
+                  "name": "enum34"
+                }, 
+                {
+                  "name": "futures"
+                }, 
+                {
+                  "name": "six"
+                }
+              ], 
+              "name": "grpcio"
+            }, 
+            {
+              "children": [
+                {
+                  "name": "setuptools"
+                }
+              ], 
+              "name": "markdown"
+            }, 
+            {
+              "name": "numpy"
+            }, 
+            {
+              "children": [
+                {
+                  "name": "setuptools"
+                }, 
+                {
+                  "name": "six"
+                }
+              ], 
+              "name": "protobuf"
+            }, 
+            {
+              "children": [
+                {
+                  "name": "certifi"
+                }, 
+                {
+                  "name": "chardet"
+                }, 
+                {
+                  "name": "idna"
+                }, 
+                {
+                  "name": "urllib3"
+                }
+              ], 
+              "name": "requests"
+            }, 
+            {
+              "name": "setuptools"
             }, 
             {
               "name": "six"
-            }
-          ], 
-          "name": "grpcio"
-        }, 
-        {
-          "children": [
-            {
-              "name": "setuptools"
-            }
-          ], 
-          "name": "markdown"
-        }, 
-        {
-          "name": "numpy"
-        }, 
-        {
-          "children": [
-            {
-              "name": "setuptools"
             }, 
             {
-              "name": "six"
+              "name": "werkzeug"
+            }, 
+            {
+              "name": "wheel"
             }
           ], 
-          "name": "protobuf"
+          "name": "tensorboard"
         }, 
         {
-          "children": [
-            {
-              "name": "certifi"
-            }, 
-            {
-              "name": "chardet"
-            }, 
-            {
-              "name": "idna"
-            }, 
-            {
-              "name": "urllib3"
-            }
-          ], 
-          "name": "requests"
+          "name": "tensorflow-estimator"
         }, 
         {
-          "name": "setuptools"
-        }, 
-        {
-          "name": "six"
-        }, 
-        {
-          "name": "werkzeug"
+          "name": "termcolor"
         }, 
         {
           "name": "wheel"
+        }, 
+        {
+          "name": "wrapt"
         }
       ], 
-      "name": "tensorboard"
+      "name": "tensorflow"
     }, 
-    {
-      "name": "tensorflow-estimator"
+    "download_sizes": [
+      {
+        "date": "2019-09-30T17:23:22", 
+        "packagetype": "bdist_wheel", 
+        "size": 102727834
+      }, 
+      {
+        "date": "2019-09-30T17:23:34", 
+        "packagetype": "bdist_wheel", 
+        "size": 86339228
+      }, 
+      {
+        "date": "2019-09-30T17:23:45", 
+        "packagetype": "bdist_wheel", 
+        "size": 102703690
+      }, 
+      {
+        "date": "2019-09-30T17:23:56", 
+        "packagetype": "bdist_wheel", 
+        "size": 86326766
+      }, 
+      {
+        "date": "2019-09-30T17:24:05", 
+        "packagetype": "bdist_wheel", 
+        "size": 48074995
+      }, 
+      {
+        "date": "2019-09-30T17:24:15", 
+        "packagetype": "bdist_wheel", 
+        "size": 102703862
+      }, 
+      {
+        "date": "2019-09-30T17:24:27", 
+        "packagetype": "bdist_wheel", 
+        "size": 86330593
+      }, 
+      {
+        "date": "2019-09-30T17:24:35", 
+        "packagetype": "bdist_wheel", 
+        "size": 48073858
+      }, 
+      {
+        "date": "2019-09-30T17:24:46", 
+        "packagetype": "bdist_wheel", 
+        "size": 102703897
+      }, 
+      {
+        "date": "2019-09-30T17:24:58", 
+        "packagetype": "bdist_wheel", 
+        "size": 86326709
+      }, 
+      {
+        "date": "2019-09-30T17:25:06", 
+        "packagetype": "bdist_wheel", 
+        "size": 48074378
+      }
+    ], 
+    "home_page": "https://www.tensorflow.org/", 
+    "info": {
+      "requiresdist": [
+        {
+          "name": "absl-py", 
+          "version": "(>=0.7.0)"
+        }, 
+        {
+          "name": "astor", 
+          "version": "(>=0.6.0)"
+        }, 
+        {
+          "name": "gast", 
+          "version": "(==0.2.2)"
+        }, 
+        {
+          "name": "google-pasta", 
+          "version": "(>=0.1.6)"
+        }, 
+        {
+          "name": "keras-applications", 
+          "version": "(>=1.0.8)"
+        }, 
+        {
+          "name": "keras-preprocessing", 
+          "version": "(>=1.0.5)"
+        }, 
+        {
+          "name": "numpy", 
+          "version": "(<2.0,>=1.16.0)"
+        }, 
+        {
+          "name": "opt-einsum", 
+          "version": "(>=2.3.2)"
+        }, 
+        {
+          "name": "six", 
+          "version": "(>=1.10.0)"
+        }, 
+        {
+          "name": "protobuf", 
+          "version": "(>=3.6.1)"
+        }, 
+        {
+          "name": "tensorboard", 
+          "version": "(<2.1.0,>=2.0.0)"
+        }, 
+        {
+          "name": "tensorflow-estimator", 
+          "version": "(<2.1.0,>=2.0.0)"
+        }, 
+        {
+          "name": "termcolor", 
+          "version": "(>=1.1.0)"
+        }, 
+        {
+          "name": "wrapt", 
+          "version": "(>=1.11.1)"
+        }, 
+        {
+          "name": "grpcio", 
+          "version": "(>=1.8.6)"
+        }, 
+        {
+          "name": "wheel"
+        }, 
+        {
+          "name": "mock", 
+          "version": "(>=2.0.0)"
+        }, 
+        {
+          "name": "functools32", 
+          "version": "(>=3.2.3)"
+        }, 
+        {
+          "extras": " python_version < \"3.4\"", 
+          "name": "backports.weakref", 
+          "version": "(>=1.0rc1)"
+        }, 
+        {
+          "extras": " python_version < \"3.4\"", 
+          "name": "enum34", 
+          "version": "(>=1.1.6)"
+        }
+      ], 
+      "summary": "TensorFlow is an open source machine learning framework for everyone."
     }, 
-    {
-      "name": "termcolor"
-    }, 
-    {
-      "name": "wheel"
-    }, 
-    {
-      "name": "wrapt"
-    }
-  ], 
-  "name": "tensorflow"
-};
+    "latest_release": "2.0.0", 
+    "name": "tensorflow", 
+    "requires_python": ""
+  }
 
+// initialize page with data
+make_tree(example);
 
-d3.select("#tree").selectAll("*").remove() // remove everything that's already there
-// console.log(data);
-var mysvg = chart(example)
-// console.log(mysvg)
-d3.select("#tree").node().append(mysvg)
 
 
 

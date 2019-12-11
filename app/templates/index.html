@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Python Dependencies Tree</title>
+  <title>Python Module Summaries</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
   <style>
@@ -14,11 +14,11 @@
   }
 
   /* set map, body, and html to 100% of the screen size */
-  #tree,
+  /* #tree,
   body,
   html {
     height: 100%;
-  }
+  } */
 
   .tooltip {
   position: absolute;
@@ -63,33 +63,41 @@
   <div class="container">
     <div class="row">
       <div class="col-xs-12 col-md-12">
-        <h1>Python Dependencies</h1>
-        <p><br>Visualize Dependencies for a Python Module:</p>
+        <h1>Python Module Summaries</h1>
+        <p><br></p>
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-12  col-md-2">
+      <div class="col-xs-12  col-md-6">
         <div class="article">
-          <form id="theForm">
-            <div class="form-group">
-              <!-- <label for="example-form">Enter a Python Module Name To See Dependencies Tree:</label> -->
-              <input class="form-control" id="theInput" name="example-form" type="text", placeholder="tensorflow">
+          <div class="input-group mb-6">
+            <div class="input-group-prepend">
+              <button class="btn btn-outline-primary" type="button" id="searchButton">Search</button>
+              <button class="btn btn-outline-primary" type="button" id="loadingButton" style="display:none" disabled >loading...</button>
             </div>
-            <button class="btn btn-primary" type="button" id="loadingButton"  style="display:none" disabled >
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Loading...
-            </button>
-            <button class="btn btn-primary" type="button" id="searchButton">
-                Search
-            </button>
-          </form>
+            <input type="text" class="form-control" id="theInput" placeholder="TensorFlow">
+          </div>
         </div>
       </div>
     </div>
+    <div class="row">
+      <p><br></p>
+      <div id="module-description">
+        <!-- Append Description Here -->
+      </div>
+    </div>
   </div>
-  <p><br><br></p>
+
+  <p><br></p>
+
   <div id="tree">
     <!-- We append our chart here. -->
+  </div>
+  <div class="container">
+    <!-- <p><br></p> -->
+    <div id="module-extras">
+      <!-- Append extra info here -->
+    </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
