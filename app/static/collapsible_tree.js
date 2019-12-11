@@ -7,8 +7,8 @@ function main(inputValue){
 
   loadingFunction(); // Show loading spinner
 
-  //url = "https://python-dependency-api.herokuapp.com/api/python/" + inputValue
-  url = "http://127.0.0.1:5000/api/python/" + inputValue
+  url = "https://python-dependency-api.herokuapp.com/api/python/" + inputValue
+  // url = "http://127.0.0.1:5000/api/python/" + inputValue
 
   d3.json(url).then(function(data){
 
