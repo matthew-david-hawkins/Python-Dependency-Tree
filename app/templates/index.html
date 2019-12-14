@@ -8,6 +8,7 @@
 
   <style>
   /* remove default margin and padding from body */
+
   body {
     padding: 0;
     margin: 0;
@@ -77,6 +78,9 @@
             </div>
             <input type="text" class="form-control" id="theInput" placeholder="TensorFlow">
           </div>
+          <div>
+            <p><a href="" id="luckyClick"><strong>I'm feeling lucky</strong></a></p>
+          </div>
         </div>
       </div>
     </div>
@@ -84,6 +88,17 @@
       <p><br></p>
       <div id="module-description">
         <!-- Append Description Here -->
+      </div>
+    </div>
+    <div class="row">
+      <div id="more-info">
+        <!-- Append a message for optional more info -->
+      </div>
+    </div>
+    
+    <div class="row">
+      <div id="no-dependencies">
+        <!-- Append a message for packages with no dependencies -->
       </div>
     </div>
   </div>
@@ -105,7 +120,7 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
-  <script type="text/javascript" src="{{url_for('static', filename='collapsible_tree.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='app.js')}}"></script>
 
 </body>
 
