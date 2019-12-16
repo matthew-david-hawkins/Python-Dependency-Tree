@@ -2,7 +2,9 @@
 // Application functions
 //-------------------------------
 
+// ------------------------------
 // Make API call, draw diagram
+//-------------------------------
 function main(inputValue){
 
   loadingFunction(); // Show loading spinner
@@ -11,8 +13,6 @@ function main(inputValue){
   // url = "http://127.0.0.1:5000/api/python/" + inputValue
 
   d3.json(url).then(function(data){
-
-    console.log(data)
 
     if (data == null){
       d3.select("#no-dependencies").selectAll("*").remove() // remove everything that's already there
@@ -53,8 +53,11 @@ function randomModule(){
   onSubmit(randModule);
 }
 
+//-------------------------------------------------
+// Make Tree Diagram and other info elements
+//-------------------------------------------------
 function make_tree(data){
-  console.log(data)
+  // console.log(data)
 
   d3.select("#no-dependencies").selectAll("*").remove() // remove everything that's already there
 
@@ -74,11 +77,11 @@ function make_tree(data){
     summary = `<br>Summary: ${data.info.summary} <br><a href="" id="moreLessInfo">more info</a>`;
   }
   var mysvg = chart(treeData)
+  console.log(mysvg)
 
   d3.select("#tree").node().append(mysvg);
 
   if (data.dependency_tree.children == null){
-    console.log("no dependencies")
     d3.select("#no-dependencies").insert("p")
     .html(`<br>(${data.name} requires no other modules.)`)//.style("color", "#1f77b4") // Plotly "muted blue"
   }
@@ -90,7 +93,6 @@ function make_tree(data){
   var infoState = false;
 
   moreLessInfo.on("click", function(){
-    console.log("more info request")
     d3.event.preventDefault();
 
     if (infoState == false){
@@ -141,7 +143,6 @@ function make_tree(data){
   var modifiedMessage = "";
 
   data.download_sizes.forEach(function(element){
-    console.log(element);
     if (element.packagetype == "sdist"){
       sourceSize += parseInt(element.size)/1000;
       thisDate = parseDate(element.date);
@@ -185,7 +186,9 @@ function make_tree(data){
 
 }
 
-// Select main on search click or enter key
+//------------------------------------------------------------
+// Wait for page to load, add event listeners on user inputs
+//------------------------------------------------------------
 setTimeout(function() { 
 
   var button = d3.select("#searchButton");
@@ -221,7 +224,9 @@ setTimeout(function() {
 
 }, 1000)
 
-// 
+//------------------------------------------------------------------------------
+// On a submission of any kind, call the main, if false submission show a hint 
+//------------------------------------------------------------------------------
 function onSubmit(inputValue){
 
 
@@ -238,9 +243,10 @@ function onSubmit(inputValue){
 }
 
 
-// Function for showing loading status
+//------------------------------------------------------------------------------
+// Show loading status while pulling data from the backend
+//------------------------------------------------------------------------------
 function loadingFunction() {
-  console.log("loading")
   var x = document.getElementById("loadingButton");
   if (x.style.display === "none") {
     x.style.display = "block";
@@ -252,9 +258,10 @@ function loadingFunction() {
   }
 }
 
-// Function for hiding the loading status
+//------------------------------------------------------------------------------
+// Hide loading status upon response from the backend
+//------------------------------------------------------------------------------
 function completionFunction() {
-  console.log("loading complete")
   var x = document.getElementById("searchButton");
   if (x.style.display === "none") {
     x.style.display = "block";
@@ -269,72 +276,55 @@ function completionFunction() {
 //---------------------------
 // Collapsible Tree
 //---------------------------
-var w = window.innerWidth;
-var h = window.innerHeight;
-margin = ({top: 10, right: 450, bottom: 10, left: 200}); // set margins
 
-var width = w - margin.left - margin.right; // set chart width
+//var width = document.getElementById('tree').offsetWidth
+var w = document.getElementById('tree-div').getBoundingClientRect().width;  
+var h = document.getElementById('tree-div').getBoundingClientRect().height;
+console.log("width: ", w, " height: ", h)
+
+
+leftMargin = "TensorFlow".length * 10; // vary the left margin based on the lenght of the module
+
+margin = ({top: 10, right: 10, bottom: 10, left: leftMargin}); // set margins
+
+var maxWidth = w - margin.left - margin.right; // set chart width
 
 // d3 = require("d3@5");
 
 diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x); // horizontal links
 
-dx = 15; // controls vertical spacing
+dx = 30; // controls vertical spacing
 
-dy = width / 6.5; // controls horizontal spacing
+dy = 300; // controls horizontal spacing. Chosen to fit two nodes on iphone
+console.log("dy:", dy)
 
 tree = d3.tree().nodeSize([dx, dy]); // Create a tree layout with node sizes specified as above
-
-  
-// // define tooltip parameters
-//   var toolTip = d3.tip()
-//   .attr("class", "tooltip")
-//   .html(function(d) {
-//       return (`testing<br>testing2: testing3<br>testing4: testing5`);
-//   });
-
-//   // define tooltip parameters
-//   var toolTippointer = d3.tip()
-//   .attr("class", "tooltippointer")
-//   .html("")
-
-// Tooltip function
-function mouseover(d) {
-  if (d._children){
-  d3.select(this).append("text")
-      .attr("class", "hover")
-      .attr('transform', function(d){ 
-          return 'translate(5, 2)';
-      })
-      .text("Click to expand");
-  }
-}
-
-// Toggle children on click.
-function mouseout(d) {
-  d3.select(this).select("text.hover").remove();
-}
 
 
 // Draw collapisble tree with json data
 function chart(data){
 
   const root = d3.hierarchy(data); // Create hierarchy objecy
+  console.log("root: ", root)
 
-  root.x0 = dy / 2;
+  root.x0 = dy / 2; //dy / 2; // margin off the left of the container
 
-  root.y0 = 0;
+  root.y0 = 0; // margin off the top of the container
 
+  console.log("Root.descendants:", root.descendants())
   root.descendants().forEach((d, i) => {
-    // console.log("depth:" + d.depth)
+    console.log("depth:" + d.depth)
     d.id = i;
     d._children = d.children;
-    if (d.depth && d.data.name.length !== 7) d.children = null;
+    console.log("length: ", d.data.name.length)
+    if (d.depth && d.data.name.length !== 1) d.children = null; // If the depth and name length are not integers, set the children to null
+    console.log(d._children)
+    console.log(d.children)
   });
 
   const svg = d3.create("svg")
-      .attr("viewBox", [-margin.left, -margin.top, width, dx]) 
-      .style("font", "10px sans-serif")
+      .attr("viewBox", [-margin.left, -margin.top, maxWidth, dx]) 
+      .style("font", "16px sans-serif") // controls text size
       .style("user-select", "none");
 
   const gLink = svg.append("g")
@@ -348,25 +338,57 @@ function chart(data){
       .attr("pointer-events", "all");
 
   function update(source) {
-    const duration = d3.event && d3.event.altKey ? 2500 : 250;
-    const nodes = root.descendants().reverse();
+    const duration = d3.event && d3.event.altKey ? 2500 : 250; // If the user is holding the ALT key, transition everything 10x as slow
+    const nodes = root.descendants().reverse(); // Descendets are orderd first by level, then alphabetically
     const links = root.links();
+    console.log("root: ", root)
 
     // Compute the new tree layout.
     tree(root);
 
+    console.log("root: ", root)
+
     let left = root;
     let right = root;
+
+    let top = root;
+    let bottom = root;
+
+    // for horizontal tree, imagine the diagram rotated right 90 degrees
     root.eachBefore(node => {
-      if (node.x < left.x) left = node;
-      if (node.x > right.x) right = node;
+      if (node.x < left.x) left = node; // find the vertical displacement of the node at the top of the tree
+      if (node.x > right.x) right = node; // find the vertical displacement of the node at the bottom of the tree
     });
 
-    const height = right.x - left.x + margin.top + margin.bottom;
+    root.eachBefore(node => {
+      if (node.y < bottom.y) bottom = node; // find the horizontal displacement of the node at the left of the tree
+      if (node.y > top.y) top = node; // find the horizontal displacement of the node at the bottom of the tree
+    });
 
+    console.log("left: ", left, "right: ", right)
+    console.log("top: ", top, "bottom: ", bottom)
+    const height = right.x - left.x + margin.top + margin.bottom; // height is the tree size + the margins
+
+    treeWidth = top.y + dy;
+    console.log(treeWidth)
+    console.log("treeWidth:", treeWidth, "maxWidth: ", maxWidth)
+    var leftOffset =  margin.left;
+
+    if (treeWidth > maxWidth){
+      console.log("special")
+      leftOffset = +(treeWidth - maxWidth) - margin.left;
+      
+    }
+    else {
+      console.log("normal")
+      leftOffset = -margin.left;
+    }
+
+    console.log(leftOffset)
+    
     const transition = svg.transition()
         .duration(duration)
-        .attr("viewBox", [-margin.left, left.x - margin.top, width, height])
+        .attr("viewBox", [leftOffset, left.x - margin.top, maxWidth, height]) // left offset, top offset = half the tree size, 
         .tween("resize", window.ResizeObserver ? null : () => () => svg.dispatch("toggle"));
 
     // Update the nodes…
@@ -385,26 +407,14 @@ function chart(data){
         // .on("mouseover", mouseover);
         //.on("mouseout", mouseout);
 
-    // Append a "click here for first exapandable node"
-//     nodeEnter.append("text")
-//   if (d._children){
-//   d3.select(this).append("text")
-//       .attr("class", "hover")
-//       .attr('transform', function(d){ 
-//           return 'translate(5, 2)';
-//       })
-//       .text("Click to expand");
-//   }
-// }
-
     nodeEnter.append("circle")
-        .attr("r", 2.5)
+        .attr("r", 4) // controls circle size
         .attr("fill", d => d._children ? "#0000EE" : "#999") // if it has dependents show in hyperlink blue, otherwise gray
         .attr("stroke-width", 10);
 
     nodeEnter.append("text")
-        .attr("dy", "0.31em")
-        .attr("x", d => d._children ? -6 : 6)
+        .attr("dy", "0.31em") // controls text size
+        .attr("x", d => d._children ? -8 : 8) // controls spacing from circles
         .attr("text-anchor", d => d._children ? "end" : "start")
         .text(d => d.data.name)
       .clone(true).lower()
@@ -453,10 +463,31 @@ function chart(data){
       d.x0 = d.x;
       d.y0 = d.y;
     });
-    
-    // // bind tooltips
-    // nodeEnter.call(toolTip);
-    // nodeEnter.call(toolTippointer);
+
+  }
+
+  update(root);
+
+  return svg.node();
+} 
+
+// Tooltip function
+// function mouseover(d) {
+//   if (d._children){
+//   d3.select(this).append("text")
+//       .attr("class", "hover")
+//       .attr('transform', function(d){ 
+//           return 'translate(5, 2)';
+//       })
+//       .text("Click to expand");
+//   }
+// }
+
+// // Toggle children on click.
+// function mouseout(d) {
+//   d3.select(this).select("text.hover").remove();
+// }
+
 
     // // show tooltip on mouseover the text within the marker
     // nodeEnter.on("mouseover", function(data) {
@@ -469,407 +500,9 @@ function chart(data){
     //     toolTip.hide(data, this);
     //     toolTippointer.hide();
     // })
-  }
-
-  update(root);
-
-  return svg.node();
-} 
 
 // initaialize with data from the 'tensorflow' module
-example = {
-    "dependency_tree": {
-      "children": [
-        {
-          "name": "absl-py"
-        }, 
-        {
-          "name": "astor"
-        }, 
-        {
-          "name": "backports.weakref"
-        }, 
-        {
-          "name": "enum34"
-        }, 
-        {
-          "name": "functools32"
-        }, 
-        {
-          "name": "gast"
-        }, 
-        {
-          "children": [
-            {
-              "name": "six"
-            }
-          ], 
-          "name": "google-pasta"
-        }, 
-        {
-          "children": [
-            {
-              "name": "enum34"
-            }, 
-            {
-              "name": "futures"
-            }, 
-            {
-              "name": "six"
-            }
-          ], 
-          "name": "grpcio"
-        }, 
-        {
-          "children": [
-            {
-              "name": "h5py"
-            }, 
-            {
-              "name": "numpy"
-            }
-          ], 
-          "name": "keras-applications"
-        }, 
-        {
-          "children": [
-            {
-              "name": "numpy"
-            }, 
-            {
-              "name": "six"
-            }
-          ], 
-          "name": "keras-preprocessing"
-        }, 
-        {
-          "children": [
-            {
-              "name": "funcsigs"
-            }, 
-            {
-              "name": "six"
-            }
-          ], 
-          "name": "mock"
-        }, 
-        {
-          "name": "numpy"
-        }, 
-        {
-          "name": "opt-einsum"
-        }, 
-        {
-          "children": [
-            {
-              "name": "setuptools"
-            }, 
-            {
-              "name": "six"
-            }
-          ], 
-          "name": "protobuf"
-        }, 
-        {
-          "name": "six"
-        }, 
-        {
-          "children": [
-            {
-              "name": "absl-py"
-            }, 
-            {
-              "name": "futures"
-            }, 
-            {
-              "children": [
-                {
-                  "name": "cachetools"
-                }, 
-                {
-                  "children": [
-                    {
-                      "name": "pyasn1"
-                    }
-                  ], 
-                  "name": "pyasn1-modules"
-                }, 
-                {
-                  "name": "rsa"
-                }, 
-                {
-                  "name": "setuptools"
-                }, 
-                {
-                  "name": "six"
-                }
-              ], 
-              "name": "google-auth"
-            }, 
-            {
-              "children": [
-                {
-                  "children": [
-                    {
-                      "name": "cachetools"
-                    }, 
-                    {
-                      "children": [
-                        {
-                          "name": "pyasn1"
-                        }
-                      ], 
-                      "name": "pyasn1-modules"
-                    }, 
-                    {
-                      "name": "rsa"
-                    }, 
-                    {
-                      "name": "setuptools"
-                    }, 
-                    {
-                      "name": "six"
-                    }
-                  ], 
-                  "name": "google-auth"
-                }, 
-                {
-                  "name": "requests-oauthlib"
-                }
-              ], 
-              "name": "google-auth-oauthlib"
-            }, 
-            {
-              "children": [
-                {
-                  "name": "enum34"
-                }, 
-                {
-                  "name": "futures"
-                }, 
-                {
-                  "name": "six"
-                }
-              ], 
-              "name": "grpcio"
-            }, 
-            {
-              "children": [
-                {
-                  "name": "setuptools"
-                }
-              ], 
-              "name": "markdown"
-            }, 
-            {
-              "name": "numpy"
-            }, 
-            {
-              "children": [
-                {
-                  "name": "setuptools"
-                }, 
-                {
-                  "name": "six"
-                }
-              ], 
-              "name": "protobuf"
-            }, 
-            {
-              "children": [
-                {
-                  "name": "certifi"
-                }, 
-                {
-                  "name": "chardet"
-                }, 
-                {
-                  "name": "idna"
-                }, 
-                {
-                  "name": "urllib3"
-                }
-              ], 
-              "name": "requests"
-            }, 
-            {
-              "name": "setuptools"
-            }, 
-            {
-              "name": "six"
-            }, 
-            {
-              "name": "werkzeug"
-            }, 
-            {
-              "name": "wheel"
-            }
-          ], 
-          "name": "tensorboard"
-        }, 
-        {
-          "name": "tensorflow-estimator"
-        }, 
-        {
-          "name": "termcolor"
-        }, 
-        {
-          "name": "wheel"
-        }, 
-        {
-          "name": "wrapt"
-        }
-      ], 
-      "name": "tensorflow"
-    }, 
-    "download_sizes": [
-      {
-        "date": "2019-09-30T17:23:22", 
-        "packagetype": "bdist_wheel", 
-        "size": 102727834
-      }, 
-      {
-        "date": "2019-09-30T17:23:34", 
-        "packagetype": "bdist_wheel", 
-        "size": 86339228
-      }, 
-      {
-        "date": "2019-09-30T17:23:45", 
-        "packagetype": "bdist_wheel", 
-        "size": 102703690
-      }, 
-      {
-        "date": "2019-09-30T17:23:56", 
-        "packagetype": "bdist_wheel", 
-        "size": 86326766
-      }, 
-      {
-        "date": "2019-09-30T17:24:05", 
-        "packagetype": "bdist_wheel", 
-        "size": 48074995
-      }, 
-      {
-        "date": "2019-09-30T17:24:15", 
-        "packagetype": "bdist_wheel", 
-        "size": 102703862
-      }, 
-      {
-        "date": "2019-09-30T17:24:27", 
-        "packagetype": "bdist_wheel", 
-        "size": 86330593
-      }, 
-      {
-        "date": "2019-09-30T17:24:35", 
-        "packagetype": "bdist_wheel", 
-        "size": 48073858
-      }, 
-      {
-        "date": "2019-09-30T17:24:46", 
-        "packagetype": "bdist_wheel", 
-        "size": 102703897
-      }, 
-      {
-        "date": "2019-09-30T17:24:58", 
-        "packagetype": "bdist_wheel", 
-        "size": 86326709
-      }, 
-      {
-        "date": "2019-09-30T17:25:06", 
-        "packagetype": "bdist_wheel", 
-        "size": 48074378
-      }
-    ], 
-    "home_page": "https://www.tensorflow.org/", 
-    "info": {
-      "requiresdist": [
-        {
-          "name": "absl-py", 
-          "version": "(>=0.7.0)"
-        }, 
-        {
-          "name": "astor", 
-          "version": "(>=0.6.0)"
-        }, 
-        {
-          "name": "gast", 
-          "version": "(==0.2.2)"
-        }, 
-        {
-          "name": "google-pasta", 
-          "version": "(>=0.1.6)"
-        }, 
-        {
-          "name": "keras-applications", 
-          "version": "(>=1.0.8)"
-        }, 
-        {
-          "name": "keras-preprocessing", 
-          "version": "(>=1.0.5)"
-        }, 
-        {
-          "name": "numpy", 
-          "version": "(<2.0,>=1.16.0)"
-        }, 
-        {
-          "name": "opt-einsum", 
-          "version": "(>=2.3.2)"
-        }, 
-        {
-          "name": "six", 
-          "version": "(>=1.10.0)"
-        }, 
-        {
-          "name": "protobuf", 
-          "version": "(>=3.6.1)"
-        }, 
-        {
-          "name": "tensorboard", 
-          "version": "(<2.1.0,>=2.0.0)"
-        }, 
-        {
-          "name": "tensorflow-estimator", 
-          "version": "(<2.1.0,>=2.0.0)"
-        }, 
-        {
-          "name": "termcolor", 
-          "version": "(>=1.1.0)"
-        }, 
-        {
-          "name": "wrapt", 
-          "version": "(>=1.11.1)"
-        }, 
-        {
-          "name": "grpcio", 
-          "version": "(>=1.8.6)"
-        }, 
-        {
-          "name": "wheel"
-        }, 
-        {
-          "name": "mock", 
-          "version": "(>=2.0.0)"
-        }, 
-        {
-          "name": "functools32", 
-          "version": "(>=3.2.3)"
-        }, 
-        {
-          "extras": " python_version < \"3.4\"", 
-          "name": "backports.weakref", 
-          "version": "(>=1.0rc1)"
-        }, 
-        {
-          "extras": " python_version < \"3.4\"", 
-          "name": "enum34", 
-          "version": "(>=1.1.6)"
-        }
-      ], 
-      "summary": "TensorFlow is an open source machine learning framework for everyone."
-    }, 
-    "latest_release": "2.0.0", 
-    "name": "tensorflow", 
-    "requires_python": ""
-  }
+example = {"dependency_tree":{"children":[{"name":"absl-py"},{"name":"astor"},{"name":"backports.weakref"},{"name":"enum34"},{"name":"functools32"},{"name":"gast"},{"children":[{"name":"six"}],"name":"google-pasta"},{"children":[{"name":"enum34"},{"name":"futures"},{"name":"six"}],"name":"grpcio"},{"children":[{"name":"h5py"},{"name":"numpy"}],"name":"keras-applications"},{"children":[{"name":"numpy"},{"name":"six"}],"name":"keras-preprocessing"},{"children":[{"name":"funcsigs"},{"name":"six"}],"name":"mock"},{"name":"numpy"},{"name":"opt-einsum"},{"children":[{"name":"setuptools"},{"name":"six"}],"name":"protobuf"},{"name":"six"},{"children":[{"name":"absl-py"},{"name":"futures"},{"children":[{"name":"cachetools"},{"children":[{"name":"pyasn1"}],"name":"pyasn1-modules"},{"name":"rsa"},{"name":"setuptools"},{"name":"six"}],"name":"google-auth"},{"children":[{"children":[{"name":"cachetools"},{"children":[{"name":"pyasn1"}],"name":"pyasn1-modules"},{"name":"rsa"},{"name":"setuptools"},{"name":"six"}],"name":"google-auth"},{"name":"requests-oauthlib"}],"name":"google-auth-oauthlib"},{"children":[{"name":"enum34"},{"name":"futures"},{"name":"six"}],"name":"grpcio"},{"children":[{"name":"setuptools"}],"name":"markdown"},{"name":"numpy"},{"children":[{"name":"setuptools"},{"name":"six"}],"name":"protobuf"},{"children":[{"name":"certifi"},{"name":"chardet"},{"name":"idna"},{"name":"urllib3"}],"name":"requests"},{"name":"setuptools"},{"name":"six"},{"name":"werkzeug"},{"name":"wheel"}],"name":"tensorboard"},{"name":"tensorflow-estimator"},{"name":"termcolor"},{"name":"wheel"},{"name":"wrapt"}],"name":"tensorflow"},"description":"TensorFlow is an open source software library for high performance numerical\ncomputation. Its flexible architecture allows easy deployment of computation\nacross a variety of platforms (CPUs, GPUs, TPUs), and from desktops to clusters\nof servers to mobile and edge devices.\n\nOriginally developed by researchers and engineers from the Google Brain team\nwithin Google's AI organization, it comes with strong support for machine\nlearning and deep learning and the flexible numerical computation core is used\nacross many other scientific domains.\n\n\n","download_sizes":[{"date":"2019-09-30T17:23:22","packagetype":"bdist_wheel","size":102727834},{"date":"2019-09-30T17:23:34","packagetype":"bdist_wheel","size":86339228},{"date":"2019-09-30T17:23:45","packagetype":"bdist_wheel","size":102703690},{"date":"2019-09-30T17:23:56","packagetype":"bdist_wheel","size":86326766},{"date":"2019-09-30T17:24:05","packagetype":"bdist_wheel","size":48074995},{"date":"2019-09-30T17:24:15","packagetype":"bdist_wheel","size":102703862},{"date":"2019-09-30T17:24:27","packagetype":"bdist_wheel","size":86330593},{"date":"2019-09-30T17:24:35","packagetype":"bdist_wheel","size":48073858},{"date":"2019-09-30T17:24:46","packagetype":"bdist_wheel","size":102703897},{"date":"2019-09-30T17:24:58","packagetype":"bdist_wheel","size":86326709},{"date":"2019-09-30T17:25:06","packagetype":"bdist_wheel","size":48074378}],"home_page":"https://www.tensorflow.org/","info":{"requiresdist":[{"name":"absl-py","version":"(>=0.7.0)"},{"name":"astor","version":"(>=0.6.0)"},{"name":"gast","version":"(==0.2.2)"},{"name":"google-pasta","version":"(>=0.1.6)"},{"name":"keras-applications","version":"(>=1.0.8)"},{"name":"keras-preprocessing","version":"(>=1.0.5)"},{"name":"numpy","version":"(<2.0,>=1.16.0)"},{"name":"opt-einsum","version":"(>=2.3.2)"},{"name":"six","version":"(>=1.10.0)"},{"name":"protobuf","version":"(>=3.6.1)"},{"name":"tensorboard","version":"(<2.1.0,>=2.0.0)"},{"name":"tensorflow-estimator","version":"(<2.1.0,>=2.0.0)"},{"name":"termcolor","version":"(>=1.1.0)"},{"name":"wrapt","version":"(>=1.11.1)"},{"name":"grpcio","version":"(>=1.8.6)"},{"name":"wheel"},{"name":"mock","version":"(>=2.0.0)"},{"name":"functools32","version":"(>=3.2.3)"},{"extras":" python_version < \"3.4\"","name":"backports.weakref","version":"(>=1.0rc1)"},{"extras":" python_version < \"3.4\"","name":"enum34","version":"(>=1.1.6)"}],"summary":"TensorFlow is an open source machine learning framework for everyone."},"latest_release":"2.0.0","name":"tensorflow","package_url":"https://pypi.org/project/tensorflow/","project_url":"https://pypi.org/project/tensorflow/","project_urls":{"Download":"https://github.com/tensorflow/tensorflow/tags","Homepage":"https://www.tensorflow.org/"},"release_url":"https://pypi.org/project/tensorflow/2.0.0/","requires_python":""}
 
 top_modules = [
   "urllib3",
