@@ -175,7 +175,7 @@ function make_tree(data){
   }
   
   d3.select("#module-extras").insert("p")
-  .html(`<br><br>Home: <a href="${homepage}" target="_blank"><strong>${homepage}</strong></a>
+  .html(`<br>Home: <a href="${homepage}" target="_blank"><strong>${homepage}</strong></a>
   <br><br>Latest Version: <strong>${data.latest_release}</strong>
   <br><br>Requires Python Version: <strong>${requiresPython}</strong>
   ${modifiedMessage}
@@ -277,18 +277,6 @@ function completionFunction() {
 // Collapsible Tree
 //---------------------------
 
-//var width = document.getElementById('tree').offsetWidth
-var w = document.getElementById('tree-div').getBoundingClientRect().width;  
-var h = document.getElementById('tree-div').getBoundingClientRect().height;
-console.log("width: ", w, " height: ", h)
-
-
-leftMargin = "TensorFlow".length * 10; // vary the left margin based on the lenght of the module
-
-margin = ({top: 10, right: 10, bottom: 10, left: leftMargin}); // set margins
-
-var maxWidth = w - margin.left - margin.right; // set chart width
-
 // d3 = require("d3@5");
 
 diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x); // horizontal links
@@ -303,6 +291,17 @@ tree = d3.tree().nodeSize([dx, dy]); // Create a tree layout with node sizes spe
 
 // Draw collapisble tree with json data
 function chart(data){
+
+  //var width = document.getElementById('tree').offsetWidth
+  var w = document.getElementById('tree-div').getBoundingClientRect().width;  
+  var h = document.getElementById('tree-div').getBoundingClientRect().height;
+  console.log("width: ", w, " height: ", h)
+
+  leftMargin = data.name.length * 11; // vary the left margin based on the lenght of the module
+
+  margin = ({top: 10, right: 50, bottom: 10, left: leftMargin}); // set margins
+
+  var maxWidth = w - margin.left - margin.right; // set chart width
 
   const root = d3.hierarchy(data); // Create hierarchy objecy
   console.log("root: ", root)
