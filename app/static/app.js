@@ -184,6 +184,10 @@ function make_tree(data){
 
   completionFunction(); // End loading spinner
 
+  var groupElement = document.querySelector('#tensorflow'); 
+  var bboxGroup = groupElement.getBBox();
+  console.log(bboxGroup)
+
 }
 
 //------------------------------------------------------------
@@ -308,9 +312,10 @@ function chart(data){
   var len = s.visualLength();
   console.log(len)
 
-  leftMargin = len + 15 * sizingScale; // vary the left margin based on the lenght of the module
-
-  margin = ({top: 10 * sizingScale, right: 50 * sizingScale, bottom: 10 * sizingScale, left: leftMargin}); // set margins
+  leftMargin = Math.pow(len, 0.85) * 1.75 + 30 * sizingScale; // vary the left margin based on the lenght of the module
+  
+  console.log(leftMargin)
+  margin = ({top: 10 * sizingScale, right: 50 * sizingScale, bottom: 10 * sizingScale, left: 50 * sizingScale}); // set margins
 
   var maxWidth = w - margin.left - margin.right; // set chart width
 
@@ -387,7 +392,7 @@ function chart(data){
       
     }
     else {
-      leftOffset = -margin.left;
+      leftOffset = -leftMargin;
     }
     
     const transition = svg.transition()
@@ -401,6 +406,7 @@ function chart(data){
 
     // Enter any new nodes at the parent's previous position.
     const nodeEnter = node.enter().append("g")
+        .attr("id", d => d.data.name)
         .attr("transform", d => `translate(${source.y0},${source.x0})`)
         .attr("fill-opacity", 0)
         .attr("stroke-opacity", 0)
@@ -412,12 +418,9 @@ function chart(data){
           tooltipDiv.transition()
           .delay(1000)	
           .duration(350)		
-          .style("opacity", 1);})
-        .on("mousemove", function(d) {		
-          tooltipDiv.transition()
-              .delay(1000)	
-              .duration(350)		
-              .style("opacity", .95);		
+          .style("opacity", 1)
+        })
+        .on("mousemove", function(d) {			
           tooltipDiv.html(d.data.name + ": " + d.data.summary)	
           .style("left", ((d3.event.pageX) + 10) + "px")		
           .style("top", ((d3.event.pageY)-45) + "px")
@@ -487,6 +490,7 @@ function chart(data){
       d.x0 = d.x;
       d.y0 = d.y;
     });
+
 
   }
 
