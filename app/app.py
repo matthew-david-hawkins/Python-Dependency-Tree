@@ -72,12 +72,35 @@ def children_list(module_name) -> Dict:
         
         pass
 
+def get_description(module_name) -> Dict:
+    """Takes a module name a returns a the module summary"""
+    module_record = get_module(module_name)
+
+    try:
+
+        if module_record["info"]["summary"]:
+
+            return module_record["info"]["summary"]
+        
+        else:
+
+            return ""
+    
+    except:
+        
+        return ""
+
 def dependency_tree(module: str, root: str, tree: Dict = {}, parent_list: List = [], recursion_depth: int = 0) -> Dict:
     """Takes a module name and does a recursive search for each module and returns a tree object"""
      # I would write the name of module
     tree.update({"name": module})
 
+    description = get_description(module)
+
+    tree.update({"summary": description})
+
     parent_list.append(module)
+
     children = children_list(module)
 
     if children: # I would check if the module had children

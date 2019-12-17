@@ -2,6 +2,7 @@
 // Application functions
 //-------------------------------
 
+
 // ------------------------------
 // Make API call, draw diagram
 //-------------------------------
@@ -291,6 +292,11 @@ String.prototype.visualLength = function()
 // Draw collapisble tree with json data
 function chart(data){
 
+  // Define the div for the tooltip
+  var div = d3.select("body").append("div")	
+  .attr("class", "tooltip")				
+  .style("opacity", 0);
+
   //var width = document.getElementById('tree').offsetWidth
   var w = document.getElementById('tree-div').getBoundingClientRect().width;  
   var h = document.getElementById('tree-div').getBoundingClientRect().height;
@@ -302,7 +308,7 @@ function chart(data){
   var len = s.visualLength();
   console.log(len)
 
-  leftMargin = (len + 12) * Math.pow(sizingScale, 0.8); // vary the left margin based on the lenght of the module
+  leftMargin = len + 15 * sizingScale; // vary the left margin based on the lenght of the module
 
   margin = ({top: 10 * sizingScale, right: 50 * sizingScale, bottom: 10 * sizingScale, left: leftMargin}); // set margins
 
@@ -323,6 +329,7 @@ function chart(data){
   root.y0 = 0; // margin off the top of the container
 
   root.descendants().forEach((d, i) => {
+    console.log(d)
     d.id = i;
     d._children = d.children;
     if (d.depth && d.data.name.length !== 1) d.children = null; // If the depth and name length are not integers, set the children to null
@@ -371,7 +378,7 @@ function chart(data){
     console.log("bottom.y:", bottom.y, "top.y:", top.y)
     const height = right.x - left.x + margin.top + margin.bottom; // height is the tree size + the margins
 
-    treeWidth = top.y + dy;
+    treeWidth = top.y + dy + margin.left;
     console.log("treeWidth:", treeWidth, "maxWidth: ", maxWidth)
     var leftOffset =  margin.left;
 
@@ -400,9 +407,21 @@ function chart(data){
         .on("click", d => {
           d.children = d.children ? null : d._children;
           update(d);
-        });
-        // .on("mouseover", mouseover);
-        //.on("mouseout", mouseout);
+        })
+        .on("mouseover", function(d) {		
+          div.transition()
+              .delay(1000)	
+              .duration(350)		
+              .style("opacity", .95);		
+          div	.html(d.data.name + ": " + d.data.summary)	
+          .style("left", (d3.event.pageX + 10) + "px")		
+          .style("top", (d3.event.pageY-45) + "px");	
+          })					
+      .on("mouseout", function(d) {		
+          div.transition()		
+              .duration(500)		
+              .style("opacity", 0);	
+      });
 
     nodeEnter.append("circle")
         .attr("r", 5 * sizingScale) // controls circle size
@@ -469,38 +488,9 @@ function chart(data){
   return svg.node();
 } 
 
-// Tooltip function
-// function mouseover(d) {
-//   if (d._children){
-//   d3.select(this).append("text")
-//       .attr("class", "hover")
-//       .attr('transform', function(d){ 
-//           return 'translate(5, 2)';
-//       })
-//       .text("Click to expand");
-//   }
-// }
-
-// // Toggle children on click.
-// function mouseout(d) {
-//   d3.select(this).select("text.hover").remove();
-// }
-
-
-    // // show tooltip on mouseover the text within the marker
-    // nodeEnter.on("mouseover", function(data) {
-    //   toolTip.show(data, this);
-    //   toolTippointer.show();
-    //   })
-  
-    // // hide tooltip on mouseout of the circle
-    // nodeEnter.on("mouseout", function(data) {
-    //     toolTip.hide(data, this);
-    //     toolTippointer.hide();
-    // })
 
 // initaialize with data from the 'tensorflow' module
-example = {"dependency_tree":{"children":[{"name":"absl-py"},{"name":"astor"},{"name":"backports.weakref"},{"name":"enum34"},{"name":"functools32"},{"name":"gast"},{"children":[{"name":"six"}],"name":"google-pasta"},{"children":[{"name":"enum34"},{"name":"futures"},{"name":"six"}],"name":"grpcio"},{"children":[{"name":"h5py"},{"name":"numpy"}],"name":"keras-applications"},{"children":[{"name":"numpy"},{"name":"six"}],"name":"keras-preprocessing"},{"children":[{"name":"funcsigs"},{"name":"six"}],"name":"mock"},{"name":"numpy"},{"name":"opt-einsum"},{"children":[{"name":"setuptools"},{"name":"six"}],"name":"protobuf"},{"name":"six"},{"children":[{"name":"absl-py"},{"name":"futures"},{"children":[{"name":"cachetools"},{"children":[{"name":"pyasn1"}],"name":"pyasn1-modules"},{"name":"rsa"},{"name":"setuptools"},{"name":"six"}],"name":"google-auth"},{"children":[{"children":[{"name":"cachetools"},{"children":[{"name":"pyasn1"}],"name":"pyasn1-modules"},{"name":"rsa"},{"name":"setuptools"},{"name":"six"}],"name":"google-auth"},{"name":"requests-oauthlib"}],"name":"google-auth-oauthlib"},{"children":[{"name":"enum34"},{"name":"futures"},{"name":"six"}],"name":"grpcio"},{"children":[{"name":"setuptools"}],"name":"markdown"},{"name":"numpy"},{"children":[{"name":"setuptools"},{"name":"six"}],"name":"protobuf"},{"children":[{"name":"certifi"},{"name":"chardet"},{"name":"idna"},{"name":"urllib3"}],"name":"requests"},{"name":"setuptools"},{"name":"six"},{"name":"werkzeug"},{"name":"wheel"}],"name":"tensorboard"},{"name":"tensorflow-estimator"},{"name":"termcolor"},{"name":"wheel"},{"name":"wrapt"}],"name":"tensorflow"},"description":"TensorFlow is an open source software library for high performance numerical\ncomputation. Its flexible architecture allows easy deployment of computation\nacross a variety of platforms (CPUs, GPUs, TPUs), and from desktops to clusters\nof servers to mobile and edge devices.\n\nOriginally developed by researchers and engineers from the Google Brain team\nwithin Google's AI organization, it comes with strong support for machine\nlearning and deep learning and the flexible numerical computation core is used\nacross many other scientific domains.\n\n\n","download_sizes":[{"date":"2019-09-30T17:23:22","packagetype":"bdist_wheel","size":102727834},{"date":"2019-09-30T17:23:34","packagetype":"bdist_wheel","size":86339228},{"date":"2019-09-30T17:23:45","packagetype":"bdist_wheel","size":102703690},{"date":"2019-09-30T17:23:56","packagetype":"bdist_wheel","size":86326766},{"date":"2019-09-30T17:24:05","packagetype":"bdist_wheel","size":48074995},{"date":"2019-09-30T17:24:15","packagetype":"bdist_wheel","size":102703862},{"date":"2019-09-30T17:24:27","packagetype":"bdist_wheel","size":86330593},{"date":"2019-09-30T17:24:35","packagetype":"bdist_wheel","size":48073858},{"date":"2019-09-30T17:24:46","packagetype":"bdist_wheel","size":102703897},{"date":"2019-09-30T17:24:58","packagetype":"bdist_wheel","size":86326709},{"date":"2019-09-30T17:25:06","packagetype":"bdist_wheel","size":48074378}],"home_page":"https://www.tensorflow.org/","info":{"requiresdist":[{"name":"absl-py","version":"(>=0.7.0)"},{"name":"astor","version":"(>=0.6.0)"},{"name":"gast","version":"(==0.2.2)"},{"name":"google-pasta","version":"(>=0.1.6)"},{"name":"keras-applications","version":"(>=1.0.8)"},{"name":"keras-preprocessing","version":"(>=1.0.5)"},{"name":"numpy","version":"(<2.0,>=1.16.0)"},{"name":"opt-einsum","version":"(>=2.3.2)"},{"name":"six","version":"(>=1.10.0)"},{"name":"protobuf","version":"(>=3.6.1)"},{"name":"tensorboard","version":"(<2.1.0,>=2.0.0)"},{"name":"tensorflow-estimator","version":"(<2.1.0,>=2.0.0)"},{"name":"termcolor","version":"(>=1.1.0)"},{"name":"wrapt","version":"(>=1.11.1)"},{"name":"grpcio","version":"(>=1.8.6)"},{"name":"wheel"},{"name":"mock","version":"(>=2.0.0)"},{"name":"functools32","version":"(>=3.2.3)"},{"extras":" python_version < \"3.4\"","name":"backports.weakref","version":"(>=1.0rc1)"},{"extras":" python_version < \"3.4\"","name":"enum34","version":"(>=1.1.6)"}],"summary":"TensorFlow is an open source machine learning framework for everyone."},"latest_release":"2.0.0","name":"tensorflow","package_url":"https://pypi.org/project/tensorflow/","project_url":"https://pypi.org/project/tensorflow/","project_urls":{"Download":"https://github.com/tensorflow/tensorflow/tags","Homepage":"https://www.tensorflow.org/"},"release_url":"https://pypi.org/project/tensorflow/2.0.0/","requires_python":""}
+example = {"dependency_tree":{"children":[{"name":"absl-py","summary":"Abseil Python Common Libraries, see https://github.com/abseil/abseil-py."},{"name":"astor","summary":"Read/rewrite/write Python ASTs"},{"name":"backports.weakref","summary":""},{"name":"enum34","summary":"Python 3.4 Enum backported to 3.3, 3.2, 3.1, 2.7, 2.6, 2.5, and 2.4"},{"name":"functools32","summary":"Backport of the functools module from Python 3.2.3 for use on 2.7 and PyPy."},{"name":"gast","summary":"Python AST that abstracts the underlying Python version"},{"children":[{"name":"six","summary":"Python 2 and 3 compatibility utilities"}],"name":"google-pasta","summary":"pasta is an AST-based Python refactoring library"},{"children":[{"name":"enum34","summary":"Python 3.4 Enum backported to 3.3, 3.2, 3.1, 2.7, 2.6, 2.5, and 2.4"},{"name":"futures","summary":"Backport of the concurrent.futures package from Python 3"},{"name":"six","summary":"Python 2 and 3 compatibility utilities"}],"name":"grpcio","summary":"HTTP/2-based RPC framework"},{"children":[{"name":"h5py","summary":"Read and write HDF5 files from Python"},{"name":"numpy","summary":"NumPy is the fundamental package for array computing with Python."}],"name":"keras-applications","summary":"Reference implementations of popular deep learning models"},{"children":[{"name":"numpy","summary":"NumPy is the fundamental package for array computing with Python."},{"name":"six","summary":"Python 2 and 3 compatibility utilities"}],"name":"keras-preprocessing","summary":"Easy data preprocessing and data augmentation for deep learning models"},{"children":[{"name":"funcsigs","summary":"Python function signatures from PEP362 for Python 2.6, 2.7 and 3.2+"},{"name":"six","summary":"Python 2 and 3 compatibility utilities"}],"name":"mock","summary":"Rolling backport of unittest.mock for all Pythons"},{"name":"numpy","summary":"NumPy is the fundamental package for array computing with Python."},{"name":"opt-einsum","summary":"Optimizing numpys einsum function"},{"children":[{"name":"setuptools","summary":"Easily download, build, install, upgrade, and uninstall Python packages"},{"name":"six","summary":"Python 2 and 3 compatibility utilities"}],"name":"protobuf","summary":"Protocol Buffers"},{"name":"six","summary":"Python 2 and 3 compatibility utilities"},{"children":[{"name":"absl-py","summary":"Abseil Python Common Libraries, see https://github.com/abseil/abseil-py."},{"name":"futures","summary":"Backport of the concurrent.futures package from Python 3"},{"children":[{"name":"cachetools","summary":"Extensible memoizing collections and decorators"},{"children":[{"name":"pyasn1","summary":"ASN.1 types and codecs"}],"name":"pyasn1-modules","summary":"A collection of ASN.1-based protocols modules."},{"name":"rsa","summary":"Pure-Python RSA implementation"},{"name":"setuptools","summary":"Easily download, build, install, upgrade, and uninstall Python packages"},{"name":"six","summary":"Python 2 and 3 compatibility utilities"}],"name":"google-auth","summary":"Google Authentication Library"},{"children":[{"children":[{"name":"cachetools","summary":"Extensible memoizing collections and decorators"},{"children":[{"name":"pyasn1","summary":"ASN.1 types and codecs"}],"name":"pyasn1-modules","summary":"A collection of ASN.1-based protocols modules."},{"name":"rsa","summary":"Pure-Python RSA implementation"},{"name":"setuptools","summary":"Easily download, build, install, upgrade, and uninstall Python packages"},{"name":"six","summary":"Python 2 and 3 compatibility utilities"}],"name":"google-auth","summary":"Google Authentication Library"},{"name":"requests-oauthlib","summary":"OAuthlib authentication support for Requests."}],"name":"google-auth-oauthlib","summary":"Google Authentication Library"},{"children":[{"name":"enum34","summary":"Python 3.4 Enum backported to 3.3, 3.2, 3.1, 2.7, 2.6, 2.5, and 2.4"},{"name":"futures","summary":"Backport of the concurrent.futures package from Python 3"},{"name":"six","summary":"Python 2 and 3 compatibility utilities"}],"name":"grpcio","summary":"HTTP/2-based RPC framework"},{"children":[{"name":"setuptools","summary":"Easily download, build, install, upgrade, and uninstall Python packages"}],"name":"markdown","summary":"Python implementation of Markdown."},{"name":"numpy","summary":"NumPy is the fundamental package for array computing with Python."},{"children":[{"name":"setuptools","summary":"Easily download, build, install, upgrade, and uninstall Python packages"},{"name":"six","summary":"Python 2 and 3 compatibility utilities"}],"name":"protobuf","summary":"Protocol Buffers"},{"children":[{"name":"certifi","summary":"Python package for providing Mozilla's CA Bundle."},{"name":"chardet","summary":"Universal encoding detector for Python 2 and 3"},{"name":"idna","summary":"Internationalized Domain Names in Applications (IDNA)"},{"name":"urllib3","summary":"HTTP library with thread-safe connection pooling, file post, and more."}],"name":"requests","summary":"Python HTTP for Humans."},{"name":"setuptools","summary":"Easily download, build, install, upgrade, and uninstall Python packages"},{"name":"six","summary":"Python 2 and 3 compatibility utilities"},{"name":"werkzeug","summary":"The comprehensive WSGI web application library."},{"name":"wheel","summary":"A built-package format for Python."}],"name":"tensorboard","summary":"TensorBoard lets you watch Tensors Flow"},{"name":"tensorflow-estimator","summary":"TensorFlow Estimator."},{"name":"termcolor","summary":"ANSII Color formatting for output in terminal."},{"name":"wheel","summary":"A built-package format for Python."},{"name":"wrapt","summary":"Module for decorators, wrappers and monkey patching."}],"name":"tensorflow","summary":"TensorFlow is an open source machine learning framework for everyone."},"description":"TensorFlow is an open source software library for high performance numerical\ncomputation. Its flexible architecture allows easy deployment of computation\nacross a variety of platforms (CPUs, GPUs, TPUs), and from desktops to clusters\nof servers to mobile and edge devices.\n\nOriginally developed by researchers and engineers from the Google Brain team\nwithin Google's AI organization, it comes with strong support for machine\nlearning and deep learning and the flexible numerical computation core is used\nacross many other scientific domains.\n\n\n","download_sizes":[{"date":"2019-09-30T17:23:22","packagetype":"bdist_wheel","size":102727834},{"date":"2019-09-30T17:23:34","packagetype":"bdist_wheel","size":86339228},{"date":"2019-09-30T17:23:45","packagetype":"bdist_wheel","size":102703690},{"date":"2019-09-30T17:23:56","packagetype":"bdist_wheel","size":86326766},{"date":"2019-09-30T17:24:05","packagetype":"bdist_wheel","size":48074995},{"date":"2019-09-30T17:24:15","packagetype":"bdist_wheel","size":102703862},{"date":"2019-09-30T17:24:27","packagetype":"bdist_wheel","size":86330593},{"date":"2019-09-30T17:24:35","packagetype":"bdist_wheel","size":48073858},{"date":"2019-09-30T17:24:46","packagetype":"bdist_wheel","size":102703897},{"date":"2019-09-30T17:24:58","packagetype":"bdist_wheel","size":86326709},{"date":"2019-09-30T17:25:06","packagetype":"bdist_wheel","size":48074378}],"home_page":"https://www.tensorflow.org/","info":{"requiresdist":[{"name":"absl-py","version":"(>=0.7.0)"},{"name":"astor","version":"(>=0.6.0)"},{"name":"gast","version":"(==0.2.2)"},{"name":"google-pasta","version":"(>=0.1.6)"},{"name":"keras-applications","version":"(>=1.0.8)"},{"name":"keras-preprocessing","version":"(>=1.0.5)"},{"name":"numpy","version":"(<2.0,>=1.16.0)"},{"name":"opt-einsum","version":"(>=2.3.2)"},{"name":"six","version":"(>=1.10.0)"},{"name":"protobuf","version":"(>=3.6.1)"},{"name":"tensorboard","version":"(<2.1.0,>=2.0.0)"},{"name":"tensorflow-estimator","version":"(<2.1.0,>=2.0.0)"},{"name":"termcolor","version":"(>=1.1.0)"},{"name":"wrapt","version":"(>=1.11.1)"},{"name":"grpcio","version":"(>=1.8.6)"},{"name":"wheel"},{"name":"mock","version":"(>=2.0.0)"},{"name":"functools32","version":"(>=3.2.3)"},{"extras":" python_version < \"3.4\"","name":"backports.weakref","version":"(>=1.0rc1)"},{"extras":" python_version < \"3.4\"","name":"enum34","version":"(>=1.1.6)"}],"summary":"TensorFlow is an open source machine learning framework for everyone."},"latest_release":"2.0.0","name":"tensorflow","package_url":"https://pypi.org/project/tensorflow/","project_url":"https://pypi.org/project/tensorflow/","project_urls":{"Download":"https://github.com/tensorflow/tensorflow/tags","Homepage":"https://www.tensorflow.org/"},"release_url":"https://pypi.org/project/tensorflow/2.0.0/","requires_python":""}
 
 top_modules = [
   "urllib3",
@@ -4504,6 +4494,7 @@ top_modules = [
   "pynzb",
   "django-el-pagination"
 ];
+
 
 // initialize page with data
 make_tree(example);
