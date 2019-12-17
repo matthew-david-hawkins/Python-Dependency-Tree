@@ -71,13 +71,12 @@ function make_tree(data){
 
   treeData = data["dependency_tree"]
   if (data.info.summary == "" || data.info.summary == null ){
-    summary = `<br>Summary: ${data.description.substring(0,70)}...<a href="" id="moreLessInfo">more info</a>`;
+    summary = `Summary: ${data.description.substring(0,70)}...<a href="" id="moreLessInfo">more info</a>`;
   }
   else {
-    summary = `<br>Summary: ${data.info.summary} <br><a href="" id="moreLessInfo">more info</a>`;
+    summary = `Summary: ${data.info.summary} <br><a href="" id="moreLessInfo">more info</a>`;
   }
   var mysvg = chart(treeData)
-  console.log(mysvg)
 
   d3.select("#tree").node().append(mysvg);
 
@@ -274,20 +273,20 @@ function completionFunction() {
 }
 
 //---------------------------
+// String Ruler
+//---------------------------
+String.prototype.visualLength = function()
+{
+    var ruler = document.getElementById("ruler");
+    ruler.innerHTML = this;
+    return ruler.offsetWidth;
+}
+
+//---------------------------
 // Collapsible Tree
 //---------------------------
 
 // d3 = require("d3@5");
-
-diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x); // horizontal links
-
-dx = 30; // controls vertical spacing
-
-dy = 300; // controls horizontal spacing. Chosen to fit two nodes on iphone
-console.log("dy:", dy)
-
-tree = d3.tree().nodeSize([dx, dy]); // Create a tree layout with node sizes specified as above
-
 
 // Draw collapisble tree with json data
 function chart(data){
@@ -297,33 +296,41 @@ function chart(data){
   var h = document.getElementById('tree-div').getBoundingClientRect().height;
   console.log("width: ", w, " height: ", h)
 
-  leftMargin = data.name.length * 11; // vary the left margin based on the lenght of the module
+  sizingScale = w / 1140;
 
-  margin = ({top: 10, right: 50, bottom: 10, left: leftMargin}); // set margins
+  var s = data.name;
+  var len = s.visualLength();
+  console.log(len)
+
+  leftMargin = (len + 12) * Math.pow(sizingScale, 0.8); // vary the left margin based on the lenght of the module
+
+  margin = ({top: 10 * sizingScale, right: 50 * sizingScale, bottom: 10 * sizingScale, left: leftMargin}); // set margins
 
   var maxWidth = w - margin.left - margin.right; // set chart width
 
+  diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x); // horizontal links
+
+  dx = 30 * sizingScale; // controls vertical spacing
+
+  dy = 300 * sizingScale; // controls horizontal spacing. Chosen to fit two nodes on iphone
+
+  tree = d3.tree().nodeSize([dx, dy]); // Create a tree layout with node sizes specified as above
+
   const root = d3.hierarchy(data); // Create hierarchy objecy
-  console.log("root: ", root)
 
   root.x0 = dy / 2; //dy / 2; // margin off the left of the container
 
   root.y0 = 0; // margin off the top of the container
 
-  console.log("Root.descendants:", root.descendants())
   root.descendants().forEach((d, i) => {
-    console.log("depth:" + d.depth)
     d.id = i;
     d._children = d.children;
-    console.log("length: ", d.data.name.length)
     if (d.depth && d.data.name.length !== 1) d.children = null; // If the depth and name length are not integers, set the children to null
-    console.log(d._children)
-    console.log(d.children)
   });
 
   const svg = d3.create("svg")
       .attr("viewBox", [-margin.left, -margin.top, maxWidth, dx]) 
-      .style("font", "16px sans-serif") // controls text size
+      .style("font", `${16 * Math.pow(sizingScale, 0.8)}px sans-serif`) // controls text size
       .style("user-select", "none");
 
   const gLink = svg.append("g")
@@ -340,12 +347,9 @@ function chart(data){
     const duration = d3.event && d3.event.altKey ? 2500 : 250; // If the user is holding the ALT key, transition everything 10x as slow
     const nodes = root.descendants().reverse(); // Descendets are orderd first by level, then alphabetically
     const links = root.links();
-    console.log("root: ", root)
 
     // Compute the new tree layout.
     tree(root);
-
-    console.log("root: ", root)
 
     let left = root;
     let right = root;
@@ -364,26 +368,20 @@ function chart(data){
       if (node.y > top.y) top = node; // find the horizontal displacement of the node at the bottom of the tree
     });
 
-    console.log("left: ", left, "right: ", right)
-    console.log("top: ", top, "bottom: ", bottom)
+    console.log("bottom.y:", bottom.y, "top.y:", top.y)
     const height = right.x - left.x + margin.top + margin.bottom; // height is the tree size + the margins
 
     treeWidth = top.y + dy;
-    console.log(treeWidth)
     console.log("treeWidth:", treeWidth, "maxWidth: ", maxWidth)
     var leftOffset =  margin.left;
 
     if (treeWidth > maxWidth){
-      console.log("special")
       leftOffset = +(treeWidth - maxWidth) - margin.left;
       
     }
     else {
-      console.log("normal")
       leftOffset = -margin.left;
     }
-
-    console.log(leftOffset)
     
     const transition = svg.transition()
         .duration(duration)
@@ -407,14 +405,15 @@ function chart(data){
         //.on("mouseout", mouseout);
 
     nodeEnter.append("circle")
-        .attr("r", 4) // controls circle size
-        .attr("fill", d => d._children ? "#0000EE" : "#999") // if it has dependents show in hyperlink blue, otherwise gray
-        .attr("stroke-width", 10);
+        .attr("r", 5 * sizingScale) // controls circle size
+        .attr("fill", d => d._children ? "blue" : "#999") // if it has dependents show in hyperlink blue, otherwise gray
+        .attr("stroke-width", 1)
+        .attr("stroke", d => d._children ? "black" : "white");
 
     nodeEnter.append("text")
-        .attr("dy", "0.31em") // controls text size
-        .attr("x", d => d._children ? -8 : 8) // controls spacing from circles
-        .attr("text-anchor", d => d._children ? "end" : "start")
+        .attr("dy", "0.31em") // controls vertical displacement
+        .attr("x", d => d.data.name == data.name ? -8 * sizingScale : 8 * sizingScale) // controls spacing from circles
+        .attr("text-anchor", d => d.data.name == data.name ? "end" : "start")
         .text(d => d.data.name)
       .clone(true).lower()
         .attr("stroke-linejoin", "round")

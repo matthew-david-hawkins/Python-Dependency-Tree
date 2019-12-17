@@ -52,25 +52,30 @@
     <div class="row">
       <div class="col-xs-12 col-md-12">
         <h1>Python Module Summaries</h1>
-        <p><br></p>
+        <p><br>Enter a python module name (e.g. pandas, sphinx, scikit-learn) to view summary.</p>
       </div>
     </div>
     <div class="row">
       <div class="col-xs-12  col-md-6">
         <div class="article">
           <div class="input-group mb-6">
-            <div class="input-group-prepend">
+            <div class="input-group-prepend" style="display:inline-block">
               <button class="btn btn-outline-primary" type="button" id="searchButton">Search</button>
               <button class="btn btn-outline-primary" type="button" id="loadingButton" style="display:none" disabled >loading...</button>
             </div>
-            <input type="text" class="form-control" id="theInput" placeholder="TensorFlow">
+            <input type="text" class="form-control" id="theInput" placeholder="TensorFlow" style="display:inline-block">
+            <div>
+              <a href="" id="luckyClick"><strong>I'm feeling lucky</strong></a>
+            </div>
           </div>
-          <div>
-            <p><a href="" id="luckyClick"><strong>I'm feeling lucky</strong></a></p>
-          </div>
+
         </div>
       </div>
     </div>
+
+    <!-- a hidend div for measuring the length of the module searched for -->
+    <span id="ruler" style="visibility: hidden; white-space: nowrap;"></span>
+
     <div class="row">
       <div id="module-description">
         <!-- Append Description Here -->
