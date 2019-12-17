@@ -293,8 +293,8 @@ String.prototype.visualLength = function()
 function chart(data){
 
   // Define the div for the tooltip
-  var div = d3.select("body").append("div")	
-  .attr("class", "tooltip")				
+  var tooltipDiv = d3.select("body").append("div")	
+  .attr("class", "treeTooltip")				
   .style("opacity", 0);
 
   //var width = document.getElementById('tree').offsetWidth
@@ -409,19 +409,26 @@ function chart(data){
           update(d);
         })
         .on("mouseover", function(d) {		
-          div.transition()
+          tooltipDiv.transition()
+          .delay(1000)	
+          .duration(350)		
+          .style("opacity", 1);})
+        .on("mousemove", function(d) {		
+          tooltipDiv.transition()
               .delay(1000)	
               .duration(350)		
               .style("opacity", .95);		
-          div	.html(d.data.name + ": " + d.data.summary)	
-          .style("left", (d3.event.pageX + 10) + "px")		
-          .style("top", (d3.event.pageY-45) + "px");	
-          })					
-      .on("mouseout", function(d) {		
-          div.transition()		
-              .duration(500)		
-              .style("opacity", 0);	
-      });
+          tooltipDiv.html(d.data.name + ": " + d.data.summary)	
+          .style("left", ((d3.event.pageX) + 10) + "px")		
+          .style("top", ((d3.event.pageY)-45) + "px")
+          .style("overflow-wrap", "break-word")
+          .style("text-align", "left")
+          })         
+        .on("mouseout", function(d) {		
+          tooltipDiv.transition()		
+              .duration(200)		
+              .style("opacity", 0);
+        });
 
     nodeEnter.append("circle")
         .attr("r", 5 * sizingScale) // controls circle size
